@@ -103,11 +103,11 @@ switch RB
         axes(handles.G3);
         imshow(gambar_filter);
     case 'RB_cyan'
-        red = gambar_ori(:,:,1);
+        blue = gambar_ori(:,:,3);
         green = gambar_ori(:,:,2);
         var = zeros(size(gambar_ori,1), size(gambar_ori,2));
 
-        gambar_filter = cat(3, red, green, var);
+        gambar_filter = cat(3, var, green, blue);
 
         axes(handles.G3);
         imshow(gambar_filter);
