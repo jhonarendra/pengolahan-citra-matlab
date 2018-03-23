@@ -100,7 +100,6 @@ validasi = 0;
 nilai = 0;
 n_brightness = sprintf('%d', nilai);
 set(handles.t_b, 'String', n_brightness);
-set(handles.RB_tumbal, 'value',1);
 cla(handles.G1);
 cla(handles.G2);
 cla(handles.G3);
@@ -175,7 +174,6 @@ else
         gambar_low = filter2(KL_sembilan, gambar_dobel);
     else
         errordlg('Pilih Ukuran Matriks Terlebih Dahulu!','Terjadi kesalahan');
-        return
     end
     
     axes(handles.G3);
@@ -230,7 +228,6 @@ else
         gambar_high = filter2(KH_sembilan, gambar_dobel);
     else
         errordlg('Pilih Ukuran Matriks Terlebih Dahulu!','Terjadi kesalahan');
-        return
     end
     
     axes(handles.G3);
@@ -339,7 +336,7 @@ elseif (validasi == 1)
     validasi = 0;
 elseif (validasi == 2)
     gambar_b=gambar_grayscale;
-    gambar_b=gambar_b+50;
+    gambar_b=gambar_b-50;
 
     axes(handles.G2);
     imshow(gambar_b);
