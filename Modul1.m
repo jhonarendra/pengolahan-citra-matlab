@@ -1,4 +1,4 @@
-function varargout = gui(varargin)
+function varargout = Modul1(varargin)
 % Kodingan udah dari sananya
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
@@ -20,7 +20,7 @@ end
 
 
 % --- Fungsi saat gui pertama kali muncul
-function gui_OpeningFcn(hObject, eventdata, handles, varargin)
+function gui_OpeningFcn(hObject, ~, handles, varargin)
 handles.output = hObject;
 
 % Update struktur handle
@@ -28,12 +28,12 @@ guidata(hObject, handles);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = gui_OutputFcn(hObject, eventdata, handles) 
+function varargout = gui_OutputFcn(~, ~, handles) 
 varargout{1} = handles.output;
 
 
 % --- Fungsi saat menekan tombol B_import.
-function B_import_Callback(hObject, eventdata, handles)
+function B_import_Callback(hObject, ~, handles)
 global gambar_ori;
 [name_file1,name_path1] = uigetfile( ...
     {'*.bmp;*.jpg;','Files of type (*.bmp,*.jpg)';},...
@@ -48,9 +48,9 @@ else
 end
 
 % --- Fungsi saat menekan tombol salin
-function B_copy_Callback(hObject, eventdata, handles)
+function B_copy_Callback(~, ~, handles)
 global gambar_ori;
-cek_kosong = isempty(get(handles.G1, 'Children'))
+cek_kosong = isempty(get(handles.G1, 'Children'));
 if (cek_kosong == 1)
     errordlg('Gambar Belum Dimasukan! Silahkan Klik Pilih Gambar...','Terjadi kesalahan');
 else
@@ -67,10 +67,10 @@ end
 
 
 % --- Fungsi saat mengganti RadioButton
-function RG_rgbfilter_SelectionChangedFcn(hObject, eventdata, handles)
+function RG_rgbfilter_SelectionChangedFcn(~, eventdata, handles)
 global gambar_ori;
-cek_kosong = isempty(get(handles.G1, 'Children'))
-cek_kosong2 = isempty(get(handles.G2, 'Children'))
+cek_kosong = isempty(get(handles.G1, 'Children'));
+cek_kosong2 = isempty(get(handles.G2, 'Children'));
 if (cek_kosong == 1)
     errordlg('Gambar Belum Dimasukan! Silahkan Klik Pilih Gambar...','Terjadi kesalahan');
     set(handles.RB_tumbal, 'value',1);
@@ -134,21 +134,21 @@ end
 
 
 % --- Atasi Error callback pada RadioButton
-function RB_red_Callback(hObject, eventdata, handles)
-function RB_green_Callback(hObject, eventdata, handles)
-function RB_blue_Callback(hObject, eventdata, handles)
-function RB_cyan_Callback(hObject, eventdata, handles)
-function RB_magenta_Callback(hObject, eventdata, handles)
-function RB_yellow_Callback(hObject, eventdata, handles)
-function RB_tumbal_Callback(hObject, eventdata, handles)
+function RB_red_Callback(~, ~, ~)
+function RB_green_Callback(~, ~, ~)
+function RB_blue_Callback(~, ~, ~)
+function RB_cyan_Callback(~, ~, ~)
+function RB_magenta_Callback(~, ~, ~)
+function RB_yellow_Callback(~, ~, ~)
+function RB_tumbal_Callback(~, ~, ~)
 
 
 % --- Fungsi saat menekan tombol keluar
-function B_keluar_Callback(hObject, eventdata, handles)
+function B_keluar_Callback(~, ~, ~)
 close();
 
 % --- Fungsi saat menekan tombol reset
-function B_reset_Callback(hObject, eventdata, handles)
+function B_reset_Callback(~, ~, handles)
 set(handles.RB_tumbal, 'value',1);
 cla(handles.G1);
 cla(handles.G2);

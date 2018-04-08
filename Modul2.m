@@ -1,4 +1,4 @@
-function varargout = m(varargin)
+function varargout = Modul2(varargin)
 % Kodingan udah dari sananya
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
@@ -20,27 +20,29 @@ end
 
 
 % --- Fungsi saat gui pertama kali muncul
-function gui_OpeningFcn(hObject, eventdata, handles, varargin)
+function gui_OpeningFcn(hObject, ~, handles, varargin)
 handles.output = hObject;
 global validasi;
+global validasi2;
 global nilai;
 global v_gray;
 global filter;
 v_gray = 0;
 nilai = 0;
 validasi = 0;
+validasi2 = 0;
 filter = 0;
 % Update struktur handle
 guidata(hObject, handles);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = gui_OutputFcn(hObject, eventdata, handles) 
+function varargout = gui_OutputFcn(~, ~, handles) 
 varargout{1} = handles.output;
 
 
 % --- Fungsi saat menekan tombol B_import.
-function B_import_Callback(hObject, eventdata, handles)
+function B_import_Callback(hObject, ~, handles)
 global gambar_ori;
 global validasi;
 [name_file1,name_path1] = uigetfile( ...
@@ -57,57 +59,59 @@ else
 end
 
 % --- Fungsi saat menekan tombol salin
-function B_grayscale_Callback(hObject, eventdata, handles)
+function B_grayscale_Callback(~, ~, handles)
 global gambar_ori;
 global gambar_grayscale;
 global gambar_b;
 global validasi;
+global validasi2;
 global v_gray;
 cek_kosong = isempty(get(handles.G1, 'Children'));
 if (cek_kosong == 1)
     errordlg('Gambar Belum Dimasukan! Silahkan Klik Pilih Gambar...','Terjadi kesalahan');
+elseif (validasi2 == 1 || validasi2 == 3)
+    gambar_b = rgb2gray(gambar_b);
+    axes(handles.G2);
+    imshow(gambar_b);
+    validasi = 1;
+    v_gray = 1;
 elseif (validasi == 1)
     gambar_grayscale = rgb2gray(gambar_ori);
-
     axes(handles.G2);
     imshow(gambar_grayscale);
     validasi = 2;
     v_gray = 1;
 elseif (v_gray == 1)
     errordlg('Gambar Sudah Di Grayscale','Terjadi kesalahan');
-else
-    gambar_b = rgb2gray(gambar_b);
-
-    axes(handles.G2);
-    imshow(gambar_b);
-    validasi = 0;
-    v_gray = 1; 
 end
 
 % --- Fungsi saat menekan tombol keluar
-function B_keluar_Callback(hObject, eventdata, handles)
+function B_keluar_Callback(~, ~, ~)
 close();
 
 % --- Fungsi saat menekan tombol reset
-function B_reset_Callback(hObject, eventdata, handles)
+function B_reset_Callback(~, ~, handles)
 global validasi;
 global nilai;
 global v_gray;
 global filter;
+global perubahan_slider;
 filter = 0;
 v_gray = 0;
 validasi = 0;
 nilai = 0;
+perubahan_slider = 0;
 n_brightness = sprintf('%d', nilai);
-set(handles.t_b, 'String', n_brightness);
+set(handles.n_b, 'String', n_brightness);
 set(handles.RB_tumbal, 'value',1);
+set(handles.Slider_brightness, 'value',0);
 cla(handles.G1);
 cla(handles.G2);
 cla(handles.G3);
 
 
 % --- Executes on button press in B_biner.
-function B_biner_Callback(hObject, eventdata, handles)
+function B_biner_Callback(~, ~, handles)
 gambar_olahan=getimage(handles.G2);
 cek_kosong = isempty(get(handles.G2, 'Children'));
 if (cek_kosong == 1)
@@ -121,8 +125,9 @@ end
 
 
 % --- Executes on button press in B_noise.
-function B_noise_Callback(hObject, eventdata, handles)
+function B_noise_Callback(~, ~, handles)
 global gambar_ori;
+global validasi2;
 global gambar_grayscale;
 global gambar_noise;
 global gambar_b;
@@ -130,29 +135,27 @@ global validasi;
 cek_kosong = isempty(get(handles.G1, 'Children'));
 if (cek_kosong == 1)
     errordlg('Gambar Belum Dimasukan! Silahkan Klik Pilih Gambar...','Terjadi kesalahan');
+elseif (validasi2 == 1 || validasi2 == 2 || validasi2 == 3)
+    gambar_b = imnoise(gambar_b,'salt & pepper',0.02);
+    axes(handles.G2);
+    gambar_noise = gambar_b;
+    imshow(gambar_noise);
+    validasi = 3;
 elseif (validasi == 1)
     gambar_noise = imnoise(gambar_ori,'salt & pepper',0.02);
-
     axes(handles.G2);
     imshow(gambar_noise);
     validasi = 3;
 elseif (validasi == 2)
     gambar_noise = imnoise(gambar_grayscale,'salt & pepper',0.02);
-
     axes(handles.G2);
     imshow(gambar_noise);
     validasi = 3;
-else
-    gambar_b = imnoise(gambar_b,'salt & pepper',0.02);
-
-    axes(handles.G2);
-    imshow(gambar_b);
-    validasi = 0;
 end
 
 
 % --- Executes on button press in B_lpf.
-function B_lpf_Callback(hObject, eventdata, handles)
+function B_lpf_Callback(~, ~, handles)
 global filter;
 gambar_olahan=getimage(handles.G2);
 KL_tiga = 1 *ones(3)/9;
@@ -185,7 +188,7 @@ end
 
 
 % --- Executes on button press in B_median.
-function B_median_Callback(hObject, eventdata, handles)
+function B_median_Callback(~, ~, handles)
 global filter;
 gambar_olahan=getimage(handles.G2);
 cek_kosong = isempty(get(handles.G2, 'Children'));
@@ -203,7 +206,7 @@ end
 
 
 % --- Executes on button press in B_hpf.
-function B_hpf_Callback(hObject, eventdata, handles)
+function B_hpf_Callback(~, ~, handles)
 global filter;
 gambar_olahan=getimage(handles.G2);
 KH_tiga = -1 *ones(3);
@@ -237,133 +240,14 @@ else
     imshow(gambar_high);
 end
 
-
-
-function E_matriks_Callback(hObject, eventdata, handles)
-% hObject    handle to E_matriks (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of E_matriks as text
-%        str2double(get(hObject,'String')) returns contents of E_matriks as a double
-
-
 % --- Executes during object creation, after setting all properties.
-function E_matriks_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to E_matriks (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
+function E_matriks_CreateFcn(hObject, ~, ~)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
 
-
-% --- Executes on button press in B_kb.
-function B_kb_Callback(hObject, eventdata, handles)
-global gambar_ori;
-global gambar_grayscale;
-global gambar_noise;
-global gambar_b;
-global nilai;
-global validasi;
-cek_kosong = isempty(get(handles.G1, 'Children'));
-if (cek_kosong == 1)
-    errordlg('Gambar Belum Dimasukan! Silahkan Klik Pilih Gambar...','Terjadi kesalahan');
-elseif (validasi == 1)
-    gambar_b=gambar_ori;
-    gambar_b=gambar_b-50;
-
-    axes(handles.G2);
-    imshow(gambar_b);
-    nilai = -50;
-    n_brightness = sprintf('%d', nilai);
-    set(handles.t_b, 'String', n_brightness);
-    validasi = 0;
-elseif (validasi == 2)
-    gambar_b=gambar_grayscale;
-    gambar_b=gambar_b-50;
-
-    axes(handles.G2);
-    imshow(gambar_b);
-    validasi = 0;
-    nilai = -50;
-    n_brightness = sprintf('%d', nilai);
-    set(handles.t_b, 'String', n_brightness);
-elseif (validasi == 3)
-    gambar_b=gambar_noise;
-    gambar_b=gambar_b-50;
-
-    axes(handles.G2);
-    imshow(gambar_b);
-    validasi = 0;
-    nilai = -50;
-    n_brightness = sprintf('%d', nilai);
-    set(handles.t_b, 'String', n_brightness);
-else
-    gambar_b=gambar_b-50;
-
-    axes(handles.G2);
-    imshow(gambar_b);
-    if (nilai <= -250)
-        errordlg('Gambar Dah Hitam Bro!','Terjadi kesalahan');
-    else
-    nilai = nilai-50;
-    n_brightness = sprintf('%d', nilai);
-    set(handles.t_b, 'String', n_brightness);
-    end
-end
-
-
-% --- Executes on button press in B_tb.
-function B_tb_Callback(hObject, eventdata, handles)
-global gambar_ori;
-global gambar_grayscale;
-global gambar_b;
-global nilai;
-global validasi;
-cek_kosong = isempty(get(handles.G1, 'Children'));
-if (cek_kosong == 1)
-    errordlg('Gambar Belum Dimasukan! Silahkan Klik Pilih Gambar...','Terjadi kesalahan');
-elseif (validasi == 1)
-    gambar_b=gambar_ori;
-    gambar_b=gambar_b+50;
-
-    axes(handles.G2);
-    imshow(gambar_b);
-    nilai = +50;
-    n_brightness = sprintf('%d', nilai);
-    set(handles.t_b, 'String', n_brightness);
-    validasi = 0;
-elseif (validasi == 2)
-    gambar_b=gambar_grayscale;
-    gambar_b=gambar_b+50;
-
-    axes(handles.G2);
-    imshow(gambar_b);
-    validasi = 0;
-    nilai = +50;
-    n_brightness = sprintf('%d', nilai);
-    set(handles.t_b, 'String', n_brightness);
-else
-    gambar_b=gambar_b+50;
-
-    axes(handles.G2);
-    imshow(gambar_b);
-    if (nilai >= 250)
-        errordlg('Gambar Dah Putih Bro!','Terjadi kesalahan');
-    else
-    nilai = nilai+50;
-    n_brightness = sprintf('%d', nilai);
-    set(handles.t_b, 'String', n_brightness);
-    end
-end
-
-
 % --- Executes when selected object is changed in BG_filter.
-function BG_filter_SelectionChangedFcn(hObject, eventdata, handles)
+function BG_filter_SelectionChangedFcn(~, eventdata, handles)
 global filter
 cek_kosong = isempty(get(handles.G1, 'Children'));
 cek_kosong2 = isempty(get(handles.G2, 'Children'));
@@ -385,4 +269,58 @@ switch RB
      case 'RB_sembilan'
         filter = 9;
 end
+end
+
+
+% --- Executes on slider movement.
+function Slider_brightness_Callback(hObject, ~, handles)
+global gambar_ori;
+global gambar_grayscale;
+global gambar_b;
+global gambar_noise
+global nilai;
+global validasi;
+global validasi2;
+global perubahan_slider;
+perubahan_slider = get(hObject, 'Value');
+cek_kosong = isempty(get(handles.G1, 'Children'));
+if (cek_kosong == 1)
+    errordlg('Gambar Belum Dimasukan! Silahkan Klik Pilih Gambar...','Terjadi kesalahan');
+    set(handles.Slider_brightness, 'value',0);
+elseif (validasi == 1)
+    gambar_b=gambar_ori;
+    gambar_b=gambar_b+perubahan_slider;
+    axes(handles.G2);
+    imshow(gambar_b);
+    nilai = round(perubahan_slider);
+    n_brightness = sprintf('%d', nilai);
+    set(handles.n_b, 'String', n_brightness);
+    validasi  = 1;
+    validasi2 = 1;
+elseif (validasi == 2)
+    gambar_b=gambar_grayscale;
+    gambar_b=gambar_b+perubahan_slider;
+    axes(handles.G2);
+    imshow(gambar_b);
+    validasi = 2;
+    nilai = round(perubahan_slider);
+    n_brightness = sprintf('%d', nilai);
+    set(handles.n_b, 'String', n_brightness);
+    validasi2 = 2;
+elseif (validasi == 3)
+    gambar_b=gambar_noise;
+    gambar_b=gambar_b+perubahan_slider;
+    axes(handles.G2);
+    imshow(gambar_b);
+    validasi = 3;
+    nilai = round(perubahan_slider);
+    n_brightness = sprintf('%d', nilai);
+    set(handles.n_b, 'String', n_brightness);
+    validasi2 = 3;
+end
+
+% --- Executes during object creation, after setting all properties.
+function Slider_brightness_CreateFcn(hObject, ~, ~)
+if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor',[.9 .9 .9]);
 end
